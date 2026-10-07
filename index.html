@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lenda dos Pulmões - RPG 2D Educativo e de Ação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Game Canvas Container -->
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- HUD Overlay -->
+      <div id="hud-overlay" class="hidden">
+        <!-- Top Left: Player Status -->
+        <div class="hud-card player-status">
+          <div class="player-avatar">
+            <div id="avatar-icon">🫁</div>
+          </div>
+          <div class="bars-container">
+            <div class="bar-wrapper hp-wrapper">
+              <div class="bar-label">VIDA</div>
+              <div class="bar-track">
+                <div id="hp-bar-fill" class="bar-fill hp-fill" style="width: 100%;"></div>
+                <span id="hp-text">100 / 100</span>
+              </div>
+            </div>
+            <div class="bar-wrapper stamina-wrapper">
+              <div class="bar-label">RESERVA (STAMINA)</div>
+              <div class="bar-track">
+                <div id="stamina-bar-fill" class="bar-fill stamina-fill" style="width: 100%;"></div>
+                <span id="stamina-text">100%</span>
+              </div>
+            </div>
+            <div class="training-stats">
+              <span class="tstat">⚡ FORÇA <strong id="stat-strength">20</strong></span>
+              <span class="tstat">🏃 STAMINA MÁX <strong id="stat-stamina">100</strong></span>
+              <button id="btn-hud-bosses" class="btn-bosses-hud">⚔️ GUARDIÕES</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Right: Objective Banner & Inhaler Quick-Indicator -->
+        <div class="hud-right">
+          <div class="hud-card objective-card">
+            <div class="objective-header">
+              <span class="objective-icon">📜</span> OBJETIVO PRINCIPAL
+            </div>
+            <div id="objective-text" class="objective-content">Fale com a Dra. Alveola na Vila da Respiração.</div>
+          </div>
+
+          <div class="hud-card inhaler-card" id="inhaler-hud-btn">
+            <div class="inhaler-icon">🌬️</div>
+            <div class="inhaler-info">
+              <div class="inhaler-name">INALADOR</div>
+              <div class="inhaler-key">[Q] ou [C]</div>
+              <div id="inhaler-status-text" class="inhaler-status">PRONTO</div>
+            </div>
+            <div class="inhaler-ring-bg">
+              <div id="inhaler-ring-fill" class="inhaler-ring"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini-Map -->
+        <div class="hud-card minimap-card">
+          <div class="minimap-title">MAPA REGIONAL</div>
+          <canvas id="minimap-canvas" width="120" height="120"></canvas>
+          <div id="location-name" class="location-tag">Vila da Respiração</div>
+        </div>
+
+        <!-- Inhaler Usage Prompt Overlay -->
+        <div id="inhaler-active-prompt" class="inhaler-prompt hidden">
+          <span class="prompt-icon">🌬️</span>
+          <span class="prompt-text">RECUPERANDO RESERVA RESPIRATÓRIA... (Ataque Bloqueado / Movimento Livre)</span>
+        </div>
+
+        <!-- Interactive Interaction Prompt -->
+        <div id="interaction-prompt" class="interaction-prompt hidden">
+          <span class="key-badge">E</span> <span id="interaction-text">Interagir</span>
+        </div>
+      </div>
+
+      <!-- Dialogue Box Overlay -->
+      <div id="dialogue-overlay" class="dialogue-box hidden">
+        <div class="dialogue-header">
+          <span id="dialogue-speaker-name" class="speaker-name">Dra. Alveola</span>
+          <span class="dialogue-hint">Pressione [E] ou [ENTER] para continuar</span>
+        </div>
+        <div class="dialogue-body">
+          <div id="dialogue-portrait" class="dialogue-portrait">👩‍⚕️</div>
+          <div id="dialogue-text-content" class="dialogue-text">...</div>
+        </div>
+      </div>
+
+      <!-- Boss Intro Cutscene Overlay -->
+      <div id="boss-intro-overlay" class="boss-intro hidden">
+        <div class="boss-intro-content">
+          <div class="boss-subtitle">GUARDIÃO DA RESPIROLOGIA</div>
+          <h1 id="boss-intro-name" class="boss-title">TRAQUEON</h1>
+          <div id="boss-intro-desc" class="boss-desc">O Mestre do Fluxo e das Ventanias da Traqueia</div>
+          <div id="boss-intro-skip" class="boss-skip-hint">Pressione [E] ou [ENTER] para pular a cutscene</div>
+        </div>
+      </div>
+
+      <!-- Boss HP Bar Overlay -->
+      <div id="boss-hp-container" class="boss-hp-bar hidden">
+        <div class="boss-hp-header">
+          <span id="boss-name-label">TRAQUEON - O Guardião da Traqueia</span>
+          <span id="boss-phase-label">FASE 1</span>
+        </div>
+        <div class="boss-hp-track">
+          <div id="boss-hp-fill" class="boss-hp-fill" style="width: 100%;"></div>
+        </div>
+      </div>
+
+      <!-- Menu Screens -->
+      <!-- Title Menu -->
+      <div id="title-screen" class="screen-overlay">
+        <div class="title-container">
+          <div class="badge-tag">RPG 2D EDUCATIVO & DE AÇÃO</div>
+          <h1 class="game-logo">LENDA DOS PULMÕES</h1>
+          <p class="game-tagline">Explore o sistema respiratório, domine a Reserva Respiratória e enfrente os Guardiões do Ar!</p>
+
+          <div class="menu-buttons">
+            <button id="btn-start-world" class="btn-primary">
+              <span class="btn-icon">🗺️</span> MUNDO GUIADO (HISTÓRIA)
+            </button>
+            <button id="btn-start-bosses" class="btn-secondary">
+              <span class="btn-icon">⚔️</span> CAMINHO DOS GUARDIÕES (BOSS RUSH)
+            </button>
+            <button id="btn-open-almanac" class="btn-tertiary">
+              <span class="btn-icon">📚</span> ALMANAQUE RESPIRATÓRIO
+            </button>
+            <button id="btn-open-controls" class="btn-tertiary">
+              <span class="btn-icon">🎮</span> CONTROLES E AJUDA
+            </button>
+          </div>
+
+          <div class="medical-disclaimer">
+            ⚠️ <strong>Nota Médica & Narrativa:</strong> A limitação respiratória do protagonista é uma mecânica fictícia de videogame. Medicamentos e tratamentos reais de saúde devem sempre seguir orientação médica profissional.
+          </div>
+        </div>
+      </div>
+
+      <!-- Boss Selection Screen (Caminho dos Guardiões) -->
+      <div id="boss-select-screen" class="screen-overlay hidden">
+        <div class="modal-card boss-select-card">
+          <h2>⚔️ CAMINHO DOS GUARDIÕES</h2>
+          <p class="subtitle">Desafie os 6 Guardiões do Sistema Respiratório em arenas diretas de alta dificuldade!</p>
+
+          <div class="boss-grid" id="boss-grid-list">
+            <!-- Boss Cards rendered dynamically -->
+          </div>
+
+          <button id="btn-back-from-bosses" class="btn-back">⬅️ VOLTAR AO MENU</button>
+        </div>
+      </div>
+
+      <!-- Respiratory Almanac Modal -->
+      <div id="almanac-screen" class="screen-overlay hidden">
+        <div class="modal-card almanac-card">
+          <div class="modal-header">
+            <h2>📚 ALMANAQUE RESPIRATÓRIO</h2>
+            <button id="btn-close-almanac" class="btn-close">✖</button>
+          </div>
+          <div class="almanac-layout">
+            <div class="almanac-sidebar" id="almanac-topics">
+              <!-- Topic list dynamically generated -->
+            </div>
+            <div class="almanac-content" id="almanac-detail">
+              <!-- Content rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Screen -->
+      <div id="controls-screen" class="screen-overlay hidden">
+        <div class="modal-card controls-card">
+          <h2>🎮 CONTROLES DO JOGO</h2>
+          <div class="controls-grid">
+            <div class="control-item">
+              <div class="keys"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> ou <span class="key">SETAS</span></div>
+              <div class="control-desc">Movimentação para 4 direções</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">SHIFT</span> ou <span class="key">ESPAÇO</span> (Manter)</div>
+              <div class="control-desc">Correr (Consome Reserva Respiratória)</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">J</span> ou <span class="key">BOTÃO ESQUERDO</span></div>
+              <div class="control-desc">Ataque Rápido</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">K</span> ou <span class="key">BOTÃO DIREITO</span></div>
+              <div class="control-desc">Ataque Forte / Especial (30 Stamina)</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">L</span></div>
+              <div class="control-desc">Esquiva / Dash (25 Stamina)</div>
+            </div>
+            <div class="control-item highlight-control">
+              <div class="keys"><span class="key">Q</span> ou <span class="key">C</span> ou <span class="key">SHIFT DIR</span></div>
+              <div class="control-desc"><strong>USAR INALADOR</strong> (Recupera 100% da Reserva em 1s sem parar de andar!)</div>
+            </div>
+            <div class="control-item highlight-control">
+              <div class="keys">🏋️ ÁREA DE TREINO (sul da vila)</div>
+              <div class="control-desc"><strong>Bata no manequim</strong> com [J] para ganhar FORÇA (+2 dano a cada 10 golpes) e <strong>corra pelo mapa</strong> segurando [SHIFT] para ganhar STAMINA MÁXIMA (+1 a cada 400m)!</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">E</span></div>
+              <div class="control-desc">Interagir (NPCs, Baús, Livros, Totem dos Guardiões)</div>
+            </div>
+            <div class="control-item">
+              <div class="keys"><span class="key">ESC</span> ou <span class="key">P</span></div>
+              <div class="control-desc">Pausar / Menu de Opções</div>
+            </div>
+          </div>
+          <button id="btn-close-controls" class="btn-back">⬅️ VOLTAR</button>
+        </div>
+      </div>
+
+      <!-- Victory Overlay -->
+      <div id="victory-screen" class="screen-overlay hidden">
+        <div class="modal-card victory-card">
+          <div class="victory-icon">🏆</div>
+          <h1 id="victory-title">GUARDIÃO DERROTADO!</h1>
+          <p id="victory-message">Você dominou o conhecimento e superou o desafio da Traqueia!</p>
+          <div id="victory-reward" class="reward-box">
+            <strong>🎁 Melhoria Desbloqueada:</strong>
+            <p id="victory-reward-text">+10 HP Máximo</p>
+          </div>
+          <div class="asthma-box">
+            <h3 id="asthma-title">🌬️ O que é a Asma?</h3>
+            <div id="asthma-info-list" class="asthma-info-list">
+              <!-- resumo educativo injetado via JS -->
+            </div>
+          </div>
+          <div class="menu-buttons">
+            <button id="btn-victory-continue" class="btn-primary">➡️ PRÓXIMO GUARDIÃO</button>
+            <button id="btn-victory-world" class="btn-secondary">🗺️ VOLTAR AO MUNDO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Defeat Overlay -->
+      <div id="defeat-screen" class="screen-overlay hidden">
+        <div class="modal-card defeat-card">
+          <div class="defeat-icon">💔</div>
+          <h1>RESERVA EXAUSTA</h1>
+          <p>Você perdeu o fôlego durante o combate, mas a jornada continua!</p>
+          <div class="tip-box">
+            💡 <strong>Dica de Combate:</strong> Use o Inalador enquanto anda ou corre para recuperar 100% da Stamina em 1 segundo. Fique atento aos padrões dos ataques do Boss!
+          </div>
+          <div class="menu-buttons">
+            <button id="btn-retry" class="btn-primary">🔄 TENTAR NOVAMENTE</button>
+            <button id="btn-defeat-world" class="btn-secondary">🗺️ VOLTAR AO MUNDO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Menu Screen -->
+      <div id="pause-screen" class="screen-overlay hidden">
+        <div class="modal-card pause-card">
+          <h2>⏸️ JOGO PAUSADO</h2>
+          <div class="menu-buttons">
+            <button id="btn-resume" class="btn-primary">▶️ CONTINUAR</button>
+            <button id="btn-pause-almanac" class="btn-tertiary">📚 ALMANAQUE RESPIRATÓRIO</button>
+            <button id="btn-toggle-sound" class="btn-tertiary">🔊 SOM / MÚSICA: LIGADO</button>
+            <button id="btn-quit-main-menu" class="btn-secondary">🏠 MENU PRINCIPAL</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

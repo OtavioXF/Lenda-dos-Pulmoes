@@ -1,0 +1,14 @@
+{
+  "name": "lenda-dos-pulmoes",
+  "version": "1.0.0",
+  "description": "Lenda dos Pulmões - RPG 2D Educativo e de Ação",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
