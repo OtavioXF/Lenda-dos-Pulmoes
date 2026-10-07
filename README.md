@@ -1,16 +1,53 @@
-# GitHub Pages
+# 🫁 Lenda dos Pulmões
 
-<img src="https://octodex.github.com/images/Professortocat_v2.png" align="right" height="200px" />
+RPG 2D educativo e de ação em pixel art, feito para ensinar sobre o sistema respiratório e a **asma** de um jeito divertido.
 
-Hey OtavioXF!
+Explore a **Vila da Respiração**, converse com os moradores, treine na área de treino e enfrente os **Guardiões** (bosses). Cada vitória revela conhecimentos sobre a asma e dá melhorias permanentes ao personagem.
 
-Mona here. I'm done preparing your exercise. Hope you enjoy! 💚
+## ✨ Recursos
 
-Remember, it's self-paced so feel free to take a break! ☕️
+- 🏘️ Vila explorável com casas, lago, feira e área de treino
+- 🏋️ Treino de **força** (manequim) e de **stamina** (corrida)
+- 💨 Mecânica do **inalador**, que recupera a reserva respiratória
+- ⚔️ Batalhas contra Guardiões, com fases e ataques com aviso
+- 📖 Almanaque com tópicos desbloqueados a cada vitória
 
-[![](https://img.shields.io/badge/Go%20to%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/OtavioXF/Lenda-dos-Pulmoes/issues/1)
+## 🎮 Controles
+
+| Tecla | Ação |
+|-------|------|
+| Setas / WASD | Mover |
+| `SHIFT` | Correr |
+| `J` | Ataque rápido |
+| `K` | Ataque forte |
+| `L` | Esquiva |
+| `Q` | Usar inalador |
+
+## 🛠️ Tecnologias
+
+- JavaScript (ES Modules) + HTML5 Canvas
+- [Vite](https://vitejs.dev/)
+
+## 🚀 Como rodar
+
+```bash
+npm install
+npm run dev
+```
+
+Para gerar a versão de produção:
+
+```bash
+npm run build
+```
+
+Os arquivos finais ficam na pasta `dist/`.
+
+## ☁️ Deploy (Cloudflare Pages)
+
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
 
 ---
 
-&copy; 2025 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
-
+Projeto feito para aprender sobre saúde respiratória.
